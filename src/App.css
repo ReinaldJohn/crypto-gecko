@@ -1,0 +1,60 @@
+/* Global Styles */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background-color: #121723;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+.sortable:after {
+  content: "▲▼";
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+  color: gray;
+}
+.star-button {
+  cursor: pointer;
+  font-size: 1.5rem; /* Increase the font size */
+}
+.star-button.filled {
+  color: gold;
+}
+.favorites-button {
+  display: flex;
+  align-items: center;
+  background-color: yellow;
+  color: #1f2937;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+.favorites-button .star-icon {
+  margin-right: 0.5rem;
+}
+.hidden-menu {
+  display: none;
+}
+@media (max-width: 640px) {
+  .hidden-menu {
+    display: block;
+  }
+}
+.skeleton {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #2d3748;
+  }
+  50% {
+    background-color: #4a5568;
+  }
+  100% {
+    background-color: #2d3748;
+  }
+}
