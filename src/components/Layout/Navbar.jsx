@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import Logo from "../../assets/cg.png";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,11 +61,7 @@ const Navbar = () => {
     <header className="bg-gray-800 text-white py-4 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="flex items-center space-x-4">
-          <img
-            src="/path/to/your/logo.png" // Make sure this path is correct
-            alt="Crypto Tracker Logo"
-            className="h-10 w-10"
-          />
+          <img src={Logo} alt="Crypto Tracker Logo" className="h-10 w-10" />
           <h1 className="text-2xl font-bold">Crypto Gecko</h1>
         </div>
         <div className="flex items-center gap-4">
