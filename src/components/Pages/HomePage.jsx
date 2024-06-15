@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { NumericFormat } from "react-number-format";
 import { Link } from "react-router-dom";
-import { CryptoContext } from "../../context/ContextProvider"; // import the context
+import { CryptoContext } from "../../context/ContextProvider";
 
 import TrendingList from "../component/TrendingList";
 import LargestGainerList from "../component/LargestGainerList";
