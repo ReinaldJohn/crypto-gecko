@@ -7,7 +7,12 @@ import CoinDetailsSkeletonLoader from "../component/CoinDetailsSkeletonLoader";
 const CoinDetails = () => {
   const { coin } = useParams();
   const [coinDetails, setCoinDetails] = useState(null);
-  const [coinDatas, setCoinDatas] = useState([]);
+  const [coinDatas, setCoinDatas] = useState({});
+  const [converter, setConverter] = useState("USD");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [cryptoAmount, setCryptoAmount] = useState(1);
+  const [fiatAmount, setFiatAmount] = useState(0);
+  const [usdPrice, setUsdPrice] = useState(0);
 
   const { isLoading, addToFavorites } = useContext(CryptoContext);
 
@@ -28,6 +33,7 @@ const CoinDetails = () => {
         );
         const coinDetailsData = await coinDetailsResponse.json();
         setCoinDetails(coinDetailsData[0]);
+        setUsdPrice(coinDetailsData[0].current_price);
 
         const coinDataResponse = await fetch(
           `https://api.coingecko.com/api/v3/coins/${coin}`,
@@ -42,6 +48,38 @@ const CoinDetails = () => {
 
     fetchCoinDetails();
   }, [coin]);
+
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const options = {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+          },
+        };
+
+        const exchangeRateResponse = await fetch(
+          `https://v6.exchangerate-api.com/v6/${
+            import.meta.env.VITE_EXCHANGE_RATE_API_FREE
+          }/latest/USD`,
+          options
+        );
+        const exchangeRateData = await exchangeRateResponse.json();
+        setExchangeRates(exchangeRateData.conversion_rates);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchExchangeRate();
+  }, []);
+
+  useEffect(() => {
+    if (coinDetails && exchangeRates[converter]) {
+      setFiatAmount(cryptoAmount * usdPrice * exchangeRates[converter]);
+    }
+  }, [cryptoAmount, usdPrice, exchangeRates, converter]);
 
   if (isLoading) {
     return <CoinDetailsSkeletonLoader />;
@@ -60,6 +98,10 @@ const CoinDetails = () => {
       ((currentPrice - minPrice) / (maxPrice - minPrice)) * 100;
     return percentage;
   };
+
+  function handleConverter(e) {
+    setConverter(e);
+  }
 
   return (
     <section className="bg-gray-900 min-h-screen">
@@ -104,10 +146,12 @@ const CoinDetails = () => {
             <div className="flex items-center">
               <span className="text-4xl font-bold mr-2" id="coin-price">
                 <NumericFormat
-                  value={coinDetails.current_price}
+                  value={(usdPrice * (exchangeRates[converter] || 1)).toFixed(
+                    2
+                  )}
                   displayType={"text"}
                   thousandSeparator={true}
-                  prefix={"$"}
+                  prefix={converter === "USD" ? "$" : "₱"}
                 />
               </span>
 
@@ -176,27 +220,31 @@ const CoinDetails = () => {
               {coinDetails.name} Converter
             </h3>
             <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-              <input
-                type="number"
-                placeholder="Amount"
-                className="px-4 py-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              <NumericFormat
+                value={cryptoAmount}
+                onValueChange={(values) => setCryptoAmount(values.floatValue)}
+                thousandSeparator={true}
+                placeholder={`${coinDetails.name} Amount`}
                 id="crypto-amount"
+                className="px-4 py-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <span className="text-xl">=</span>
               <div className="flex flex-col md:flex-row items-center gap-4">
-                <input
-                  type="number"
-                  placeholder="USD"
+                <NumericFormat
+                  value={fiatAmount.toFixed(2)}
+                  thousandSeparator={true}
+                  placeholder={converter}
+                  id="amount"
                   className="px-4 py-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  id="usd-amount"
                 />
                 <div className="rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400">
                   <select
                     className="px-4 py-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    defaultValue="USD"
+                    onChange={(e) => handleConverter(e.target.value)}
                   >
                     <option value="USD">USD</option>
                     <option value="PHP">PHP</option>
+                    {/* Add more currencies as needed */}
                   </select>
                 </div>
               </div>
@@ -278,12 +326,6 @@ const CoinDetails = () => {
                   <option>Blockchain</option>
                 </select>
               </div>
-              <div className="flex justify-between">
-                <span>Wallets</span>
-                <select className="bg-gray-700 rounded-md px-2 py-1">
-                  <option>Ledger</option>
-                </select>
-              </div>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <span>Community</span>
                 <div className="flex flex-wrap justify-center space-x-2 mt-2 md:mt-0">
@@ -310,14 +352,15 @@ const CoinDetails = () => {
               <div className="flex justify-between items-center">
                 <span>Categories</span>
                 <div className="flex flex-wrap justify-center space-x-2 space-y-2 md:mt-0">
-                  {coinDatas.categories.map((category, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center bg-gray-700 text-white p-2 rounded-full"
-                    >
-                      {category}
-                    </span>
-                  ))}
+                  {coinDatas.categories &&
+                    coinDatas.categories.map((category, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center bg-gray-700 text-white p-2 rounded-full"
+                      >
+                        {category}
+                      </span>
+                    ))}
                 </div>
               </div>
             </div>
@@ -331,12 +374,6 @@ const CoinDetails = () => {
                 <span>24h Range</span>
                 <span>
                   ${coinDetails.low_24h} - ${coinDetails.high_24h}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>7d Range</span>
-                <span>
-                  ${coinDetails.low_7d} - ${coinDetails.high_7d}
                 </span>
               </div>
               <div className="flex justify-between">
