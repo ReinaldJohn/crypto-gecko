@@ -75,7 +75,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto">
+      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto custom-scrollbar">
         <h2 className="text-xl font-semibold mb-4 text-white">
           Top Cryptocurrencies
         </h2>
@@ -133,10 +133,10 @@ const HomePage = () => {
                     key={crypto.id}
                     className="hover:bg-gray-700 transition-all ease-in-out"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-0 bg-gray-800">
+                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-0 bg-gray-800 z-10">
                       {crypto.market_cap_rank}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-20 bg-gray-800">
+                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-20 bg-gray-800 z-10">
                       <Link to={`coin-details/${crypto.id}`}>
                         <div className="flex items-center">
                           <img
