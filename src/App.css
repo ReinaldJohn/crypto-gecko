@@ -71,3 +71,18 @@ body {
   background-color: #2d3748; /* Customize the scrollbar track color */
   border-radius: 4px;
 }
+/* Sticky Columns */
+table th.sticky,
+table td.sticky {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  z-index: 1;
+}
+
+table th.sticky {
+  top: 0;
+}
+
+table td.sticky {
+  background: inherit; /* Inherit the background color of the table row */
+}

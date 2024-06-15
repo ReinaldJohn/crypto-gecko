@@ -75,45 +75,45 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto sm:mt-8">
+      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto">
         <h2 className="text-xl font-semibold mb-4 text-white">
           Top Cryptocurrencies
         </h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar">
           <table className="min-w-full divide-y divide-gray-700">
             <thead className="bg-gray-700">
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sortable"
+                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sticky left-0 bg-gray-700 z-10"
                   onClick={() => requestSort("market_cap_rank")}
                 >
                   Rank #
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sortable"
+                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sticky left-20 bg-gray-700 z-10"
                   onClick={() => requestSort("name")}
                 >
                   Name
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sortable"
+                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer"
                   onClick={() => requestSort("current_price")}
                 >
                   Price
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sortable"
+                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer"
                   onClick={() => requestSort("price_change_percentage_24h")}
                 >
                   24h Change
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer sortable"
+                  className="px-6 py-3 text-xs text-start font-medium text-white uppercase tracking-wider cursor-pointer"
                   onClick={() => requestSort("market_cap")}
                 >
                   Market Cap
@@ -133,10 +133,10 @@ const HomePage = () => {
                     key={crypto.id}
                     className="hover:bg-gray-700 transition-all ease-in-out"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-white">
+                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-0 bg-gray-800">
                       {crypto.market_cap_rank}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-white">
+                    <td className="px-6 py-4 whitespace-nowrap text-white sticky left-20 bg-gray-800">
                       <Link to={`coin-details/${crypto.id}`}>
                         <div className="flex items-center">
                           <img
