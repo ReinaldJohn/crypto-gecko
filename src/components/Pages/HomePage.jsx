@@ -75,7 +75,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto">
+      <div className="container mx-auto bg-gray-800 rounded shadow-md p-6 h-full overflow-x-auto sm:mt-8">
         <h2 className="text-xl font-semibold mb-4 text-white">
           Top Cryptocurrencies
         </h2>
