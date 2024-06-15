@@ -13,8 +13,9 @@ const CoinDetails = () => {
   const [cryptoAmount, setCryptoAmount] = useState(1);
   const [fiatAmount, setFiatAmount] = useState(0);
   const [usdPrice, setUsdPrice] = useState(0);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
-  const { isLoading, addToFavorites } = useContext(CryptoContext);
+  const { isLoading, addToFavorites, favorites } = useContext(CryptoContext);
 
   useEffect(() => {
     const fetchCoinDetails = async () => {
@@ -103,6 +104,19 @@ const CoinDetails = () => {
     setConverter(e);
   }
 
+  const formatValue = (value) =>
+    (value * (exchangeRates[converter] || 1)).toFixed(2);
+
+  const handleAddToFavorites = (symbol) => {
+    setIsFavoriteLoading(true);
+    addToFavorites(symbol);
+    setTimeout(() => {
+      setIsFavoriteLoading(false);
+    }, 1000); // Simulate a loading state for 1 second
+  };
+
+  const isFavorite = favorites.includes(coinDatas.symbol);
+
   return (
     <section className="bg-gray-900 min-h-screen">
       <div className="container mx-auto max-w-3xl">
@@ -134,21 +148,32 @@ const CoinDetails = () => {
               </span>
             </div>
 
-            <div
-              className="flex items-center bg-yellow-500 px-4 py-2 rounded-md cursor-pointer text-white"
-              onClick={() => addToFavorites(coinDatas.symbol)}
-            >
-              <i className="fa fa-star mr-2" aria-hidden="true"></i>
-              <span>Add to Favorites</span>
-            </div>
+            {isFavorite ? (
+              <div className="flex items-center bg-yellow-500 px-4 py-2 rounded-md cursor-pointer text-white">
+                <i className="fa fa-star mr-2" aria-hidden="true"></i>
+                <span>Favorited</span>
+              </div>
+            ) : (
+              <div
+                className="flex items-center bg-yellow-500 px-4 py-2 rounded-md cursor-pointer text-white"
+                onClick={() => handleAddToFavorites(coinDatas.symbol)}
+              >
+                {isFavoriteLoading ? (
+                  <span>Loading...</span>
+                ) : (
+                  <>
+                    <i className="fa fa-star mr-2" aria-hidden="true"></i>
+                    <span>Add to Favorites</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center mb-4">
             <div className="flex items-center">
               <span className="text-4xl font-bold mr-2" id="coin-price">
                 <NumericFormat
-                  value={(usdPrice * (exchangeRates[converter] || 1)).toFixed(
-                    2
-                  )}
+                  value={formatValue(usdPrice)}
                   displayType={"text"}
                   thousandSeparator={true}
                   prefix={converter === "USD" ? "$" : "₱"}
@@ -198,19 +223,19 @@ const CoinDetails = () => {
             <div className="flex justify-between text-xs">
               <span>
                 <NumericFormat
-                  value={coinDetails.low_24h}
+                  value={formatValue(coinDetails.low_24h)}
                   displayType={"text"}
                   thousandSeparator={true}
-                  prefix={"$"}
+                  prefix={converter === "USD" ? "$" : "₱"}
                 />
               </span>
               <span>24hr Range</span>
               <span>
                 <NumericFormat
-                  value={coinDetails.high_24h}
+                  value={formatValue(coinDetails.high_24h)}
                   displayType={"text"}
                   thousandSeparator={true}
-                  prefix={"$"}
+                  prefix={converter === "USD" ? "$" : "₱"}
                 />
               </span>
             </div>
@@ -236,6 +261,7 @@ const CoinDetails = () => {
                   placeholder={converter}
                   id="amount"
                   className="px-4 py-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  prefix={converter === "USD" ? "$" : "₱"}
                 />
                 <div className="rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400">
                   <select
@@ -257,10 +283,10 @@ const CoinDetails = () => {
                 <span>Market Cap</span>
                 <span>
                   <NumericFormat
-                    value={coinDetails.market_cap}
+                    value={formatValue(coinDetails.market_cap)}
                     displayType={"text"}
                     thousandSeparator={true}
-                    prefix={"$"}
+                    prefix={converter === "USD" ? "$" : "₱"}
                   />
                 </span>
               </div>
@@ -268,10 +294,10 @@ const CoinDetails = () => {
                 <span>Fully Diluted Valuation</span>
                 <span>
                   <NumericFormat
-                    value={coinDetails.fully_diluted_valuation}
+                    value={formatValue(coinDetails.fully_diluted_valuation)}
                     displayType={"text"}
                     thousandSeparator={true}
-                    prefix={"$"}
+                    prefix={converter === "USD" ? "$" : "₱"}
                   />
                 </span>
               </div>
@@ -279,10 +305,10 @@ const CoinDetails = () => {
                 <span>24 Hour Trading Vol</span>
                 <span>
                   <NumericFormat
-                    value={coinDetails.total_volume}
+                    value={formatValue(coinDetails.total_volume)}
                     displayType={"text"}
                     thousandSeparator={true}
-                    prefix={"$"}
+                    prefix={converter === "USD" ? "$" : "₱"}
                   />
                 </span>
               </div>
@@ -320,35 +346,6 @@ const CoinDetails = () => {
                   {coinDatas.links?.homepage[0]}
                 </a>
               </div>
-              <div className="flex justify-between">
-                <span>Explorers</span>
-                <select className="bg-gray-700 rounded-md px-2 py-1">
-                  <option>Blockchain</option>
-                </select>
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <span>Community</span>
-                <div className="flex flex-wrap justify-center space-x-2 mt-2 md:mt-0">
-                  <span className="inline-flex items-center bg-gray-700 text-white px-4 py-2 rounded-full mr-2">
-                    <i className="fab fa-twitter mr-2"></i>Twitter
-                  </span>
-                  <span className="inline-flex items-center bg-gray-700 text-white px-4 py-2 rounded-full mr-2">
-                    <i className="fab fa-facebook mr-2"></i>Facebook
-                  </span>
-                  <span className="inline-flex items-center bg-gray-700 text-white px-4 py-2 rounded-full">
-                    <i className="fas fa-comments mr-2"></i>xrpfchat.com
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Source Code</span>
-                <a
-                  href="https://github.com/ripple"
-                  className="text-blue-500 hover:underline"
-                >
-                  GitHub
-                </a>
-              </div>
               <div className="flex justify-between items-center">
                 <span>Categories</span>
                 <div className="flex flex-wrap justify-center space-x-2 space-y-2 md:mt-0">
@@ -373,21 +370,43 @@ const CoinDetails = () => {
               <div className="flex justify-between">
                 <span>24h Range</span>
                 <span>
-                  ${coinDetails.low_24h} - ${coinDetails.high_24h}
+                  <NumericFormat
+                    value={formatValue(coinDetails.low_24h)}
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={converter === "USD" ? "$" : "₱"}
+                  />{" "}
+                  -{" "}
+                  <NumericFormat
+                    value={formatValue(coinDetails.high_24h)}
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={converter === "USD" ? "$" : "₱"}
+                  />
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>All-Time High</span>
                 <span>
-                  ${coinDetails.ath} (
-                  {new Date(coinDetails.ath_date).toLocaleDateString()})
+                  <NumericFormat
+                    value={formatValue(coinDetails.ath)}
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={converter === "USD" ? "$" : "₱"}
+                  />{" "}
+                  ({new Date(coinDetails.ath_date).toLocaleDateString()})
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>All-Time Low</span>
                 <span>
-                  ${coinDetails.atl} (
-                  {new Date(coinDetails.atl_date).toLocaleDateString()})
+                  <NumericFormat
+                    value={formatValue(coinDetails.atl)}
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={converter === "USD" ? "$" : "₱"}
+                  />{" "}
+                  ({new Date(coinDetails.atl_date).toLocaleDateString()})
                 </span>
               </div>
             </div>
